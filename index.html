@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    First Number
+    <br>
+    <input id="first" type="number">
+    <br>
+    Second Number
+    <br>
+    <input id="second" type="number">
+    <br><br>
+    <button onclick="sum()">Calculate</button>
+    <br><br>
+    Result 
+    <br>
+    <input id="rez" disabled>
+    <br>
+    <br>
+    <button onclick="wasm()"> Click me and check console</button>
+
+    <script>
+        var importObject = {};
+        function sum (){
+            var first = parseInt(document.getElementById("first").value);
+            var second = parseInt(document.getElementById("second").value);
+            WebAssembly.instantiateStreaming(fetch("test.wasm"), importObject).then(
+            (obj) => {
+                var wasm = obj.instance.exports.add(first,second);
+                document.getElementById("rez").value = wasm;
+            });
+        }
+
+        function wasm() {
+            const wasm = {
+                console: {
+                    log(arg) {
+                    console.log(arg);
+                    },
+                },
+            };
+            WebAssembly.instantiateStreaming(fetch("consolelog.wasm"), wasm).then(
+            (obj) => {
+                obj.instance.exports.consoleLog();
+            });
+        }
+    </script>
+</body>
+</html>
